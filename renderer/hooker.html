@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Tab</title>
+  <style>
+    #process-list { 
+      list-style: none; 
+      padding: 0; 
+    }
+    #process-list li { 
+      cursor: pointer; 
+      padding: 5px; 
+    }
+    #process-list li:hover { 
+      background-color: #f0f0f0; 
+    }
+    #log, .thread-section { 
+      margin-top: 20px; 
+      border: 1px solid #ccc; 
+      padding: 10px; 
+      max-height: 300px; 
+      overflow-y: auto; 
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>Select a Process <button id="refresh-button">Refresh</button></h1>
+  <ul id="process-list"></ul>
+  
+  <h2>Log (Errors and Thread ID 0)</h2>
+  <div id="log"></div>
+  
+  <h2>Thread Outputs (Non-Zero Thread IDs)</h2>
+  <div id="thread-outputs"></div>
+
+  <h1>Threads</h1>
+  <ul id="thread-list"></ul>
+  
+  <h2>Utility Chain</h2>
+  <div id="utility-menu">
+    <select id="utility-select">
+        <option value="">Select a utility</option>
+        <option value="regexReplacement">Regex Replacement</option>
+        <option value="regexFiltering">Regex Filtering</option>
+        <option value="deleteDuplicateLines">Delete Duplicate Lines</option>
+        <option value="deleteDuplicateLetters">Delete Duplicate Letters</option>
+    </select>
+    <div id="utility-params"></div>
+    <button id="add-utility">Add Utility</button>
+  </div>
+  <ul id="utility-chain"></ul>
+  <div id="selected-thread-output"></div>
+  <button id="save-config">Save Configuration</button>
+  <button id="open-new-window">Open New Window</button>
+  <browser-action-list id="actions"></browser-action-list>
+
+  <script src="utils.js" type="module"></script>
+  <script src="utilityChain.js" type="module"></script>
+  <script src="processList.js" type="module"></script>
+  <script src="logDisplay.js" type="module"></script>
+  <script src="threadOutputs.js" type="module"></script>
+  <script src="threadSelection.js" type="module"></script>
+  <script src="configManager.js" type="module"></script>
+</body>
+</html>

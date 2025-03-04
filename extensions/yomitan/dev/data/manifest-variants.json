@@ -1,0 +1,393 @@
+{
+    "manifest": {
+        "manifest_version": 3,
+        "name": "Yomitan Popup Dictionary",
+        "version": "$YOMITAN_VERSION",
+        "description": "Popup dictionary for language learning",
+        "author": {
+            "email": "themoeway@googlegroups.com"
+        },
+        "icons": {
+            "16": "images/icon16.png",
+            "19": "images/icon19.png",
+            "32": "images/icon32.png",
+            "38": "images/icon38.png",
+            "48": "images/icon48.png",
+            "64": "images/icon64.png",
+            "128": "images/icon128.png"
+        },
+        "action": {
+            "default_icon": {
+                "16": "images/icon16.png",
+                "19": "images/icon19.png",
+                "32": "images/icon32.png",
+                "38": "images/icon38.png",
+                "48": "images/icon48.png",
+                "64": "images/icon64.png",
+                "128": "images/icon128.png"
+            },
+            "default_title": "Yomitan",
+            "default_popup": "action-popup.html"
+        },
+        "background": {
+            "service_worker": "sw.js",
+            "type": "module"
+        },
+        "omnibox": {
+            "keyword": "yomi"
+        },
+        "content_scripts": [
+            {
+                "run_at": "document_idle",
+                "matches": [
+                    "http://*/*",
+                    "https://*/*",
+                    "file://*/*"
+                ],
+                "match_about_blank": true,
+                "all_frames": true,
+                "js": [
+                    "js/app/content-script-wrapper.js"
+                ]
+            }
+        ],
+        "minimum_chrome_version": "102.0.0.0",
+        "options_ui": {
+            "page": "settings.html",
+            "open_in_tab": true
+        },
+        "sandbox": {
+            "pages": [
+                "template-renderer.html"
+            ]
+        },
+        "permissions": [
+            "storage",
+            "clipboardWrite",
+            "unlimitedStorage",
+            "declarativeNetRequest",
+            "scripting",
+            "offscreen",
+            "contextMenus"
+        ],
+        "optional_permissions": [
+            "clipboardRead",
+            "nativeMessaging"
+        ],
+        "host_permissions": [
+            "<all_urls>"
+        ],
+        "commands": {
+            "toggleTextScanning": {
+                "suggested_key": {
+                    "default": "Alt+Delete"
+                },
+                "description": "Toggle text scanning on/off"
+            },
+            "openInfoPage": {
+                "description": "Open the info page"
+            },
+            "openSettingsPage": {
+                "description": "Open the settings page"
+            },
+            "openSearchPage": {
+                "suggested_key": {
+                    "default": "Alt+Insert"
+                },
+                "description": "Open the search page"
+            },
+            "openPopupWindow": {
+                "description": "Open the popup window"
+            }
+        },
+        "web_accessible_resources": [
+            {
+                "resources": [
+                    "popup.html",
+                    "template-renderer.html",
+                    "js/*",
+                    "lib/resvg.wasm"
+                ],
+                "matches": [
+                    "<all_urls>"
+                ]
+            }
+        ],
+        "content_security_policy": {
+            "extension_pages": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; img-src blob: 'self'; style-src 'self' 'unsafe-inline'; media-src *; connect-src *",
+            "sandbox": "sandbox allow-scripts; default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'unsafe-inline'"
+        }
+    },
+    "defaultVariant": "base",
+    "variants": [
+        {
+            "name": "base",
+            "buildable": false
+        },
+        {
+            "name": "chrome",
+            "inherit": "base",
+            "fileName": "yomitan-chrome.zip",
+            "excludeFiles": [
+                "background.html"
+            ]
+        },
+        {
+            "name": "chrome-dev",
+            "inherit": "chrome",
+            "fileName": "yomitan-chrome-dev.zip",
+            "modifications": [
+                {
+                    "action": "replace",
+                    "path": [
+                        "name"
+                    ],
+                    "pattern": "^.*$",
+                    "patternFlags": "",
+                    "replacement": "$& (development build)"
+                },
+                {
+                    "action": "replace",
+                    "path": [
+                        "description"
+                    ],
+                    "pattern": "^(.*)(?:\\.\\s*)?$",
+                    "patternFlags": "",
+                    "replacement": "$1. This is a development build."
+                }
+            ]
+        },
+        {
+            "name": "chrome-playwright",
+            "inherit": "chrome-dev",
+            "fileName": "yomitan-chrome-playwright.zip",
+            "modifications": [
+                {
+                    "action": "remove",
+                    "path": [
+                        "optional_permissions"
+                    ],
+                    "item": "clipboardRead"
+                },
+                {
+                    "action": "add",
+                    "path": [
+                        "permissions"
+                    ],
+                    "items": [
+                        "clipboardRead"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "firefox",
+            "inherit": "base",
+            "fileName": "yomitan-firefox.zip",
+            "modifications": [
+                {
+                    "action": "set",
+                    "path": [
+                        "author"
+                    ],
+                    "value": "Yomidevs"
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "background",
+                        "service_worker"
+                    ]
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "background",
+                        "type"
+                    ]
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "background",
+                        "page"
+                    ],
+                    "value": "background.html"
+                },
+                {
+                    "action": "remove",
+                    "path": [
+                        "web_accessible_resources",
+                        0,
+                        "resources"
+                    ],
+                    "item": "template-renderer.html"
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "sandbox"
+                    ]
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "content_security_policy",
+                        "sandbox"
+                    ]
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "content_security_policy",
+                        "extension_pages"
+                    ],
+                    "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; img-src blob: 'self'; style-src 'self' 'unsafe-inline'; media-src *; connect-src *"
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "browser_specific_settings"
+                    ],
+                    "value": {
+                        "gecko": {
+                            "id": "{6b733b82-9261-47ee-a595-2dda294a4d08}",
+                            "strict_min_version": "115.0"
+                        },
+                        "gecko_android": {
+                            "strict_min_version": "115.0"
+                        }
+                    }
+                },
+                {
+                    "action": "remove",
+                    "path": [
+                        "permissions"
+                    ],
+                    "item": "offscreen"
+                }
+            ],
+            "excludeFiles": [
+                "sw.js",
+                "offscreen.html",
+                "js/background/offscreen.js",
+                "js/background/offscreen-main.js"
+            ]
+        },
+        {
+            "name": "firefox-dev",
+            "inherit": "firefox",
+            "fileName": "yomitan-firefox-dev.zip",
+            "modifications": [
+                {
+                    "action": "replace",
+                    "path": [
+                        "name"
+                    ],
+                    "pattern": "^.*$",
+                    "patternFlags": "",
+                    "replacement": "$& (development build)"
+                },
+                {
+                    "action": "replace",
+                    "path": [
+                        "description"
+                    ],
+                    "pattern": "^(.*)(?:\\.\\s*)?$",
+                    "patternFlags": "",
+                    "replacement": "$1. This is a development build."
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "browser_specific_settings",
+                        "gecko",
+                        "id"
+                    ],
+                    "value": "{2d13e145-294e-4ead-9bce-b4644b203a00}"
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "browser_specific_settings",
+                        "gecko",
+                        "update_url"
+                    ],
+                    "value": "https://raw.githubusercontent.com/yomidevs/yomitan/metadata/updates.json"
+                }
+            ],
+            "excludeFiles": [
+                "sw.js",
+                "offscreen.html",
+                "js/background/offscreen.js",
+                "js/background/offscreen-main.js"
+            ]
+        },
+        {
+            "name": "firefox-android",
+            "inherit": "firefox",
+            "fileName": "yomitan-firefox-android"
+        },
+        {
+            "name": "safari",
+            "modifications": [
+                {
+                    "action": "set",
+                    "path": [
+                        "author"
+                    ],
+                    "value": "Yomidevs"
+                },
+                {
+                    "action": "remove",
+                    "path": [
+                        "optional_permissions"
+                    ],
+                    "item": "clipboardRead"
+                },
+                {
+                    "action": "remove",
+                    "path": [
+                        "permissions"
+                    ],
+                    "item": "offscreen"
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "content_scripts",
+                        0,
+                        "match_about_blank"
+                    ]
+                },
+                {
+                    "action": "delete",
+                    "path": [
+                        "sandbox"
+                    ]
+                },
+                {
+                    "action": "set",
+                    "path": [
+                        "content_security_policy"
+                    ],
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-eval'; img-src blob: 'self'; style-src 'self' 'unsafe-inline'; media-src *; connect-src *"
+                }
+            ],
+            "excludeFiles": [
+                "sw.js",
+                "offscreen.html",
+                "js/background/offscreen.js",
+                "js/background/offscreen-main.js"
+            ]
+        },
+        {
+            "name": "edge",
+            "inherit": "base",
+            "fileName": "yomitan-edge.zip",
+            "excludeFiles": [
+                "background.html"
+            ]
+        }
+    ]
+}

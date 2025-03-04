@@ -1,0 +1,36 @@
+{
+  "name": "matsystemv4",
+  "productName": "matsystemv4",
+  "version": "2.2.0",
+  "description": "the mat system, beware.",
+  "main": ".webpack/main",
+  "scripts": {
+    "build": "npm run package",
+    "start": "electron-forge start",
+    "start:trace": "electron-forge start -- --trace-startup=\"*\" --trace-startup-file=\"$HOME/Desktop/trace.json\"",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "license": "MAT",
+  "author": "mat",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.8.1",
+    "electron-chrome-context-menu": "^1.1.0",
+    "electron-chrome-extensions": "^4.6.0",
+    "electron-chrome-web-store": "^0.9.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "ps-list": "^8.1.1"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-dmg": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-webpack": "^7.5.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.2",
+    "electron": "^35.0.0-beta.8"
+  }
+}

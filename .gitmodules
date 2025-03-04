@@ -1,0 +1,6 @@
+[submodule "extensions/yomitan"]
+	path = extensions/yomitan
+	url = https://github.com/yomidevs/yomitan
+[submodule "extensions/10ten-ja-reader"]
+	path = extensions/10ten-ja-reader
+	url = https://github.com/birchill/10ten-ja-reader

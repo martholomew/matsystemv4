@@ -1,0 +1,803 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Generated popup content inspector</title>
+<link href="../css/popup.css" rel="stylesheet" />
+<style>
+  .label {
+    margin-top: 10px;
+    margin-bottom: 3px;
+  }
+</style>
+<script src="content-loader.js"></script>
+<script>
+  const config = {
+    accentDisplay: 'binary',
+    copyState: { kind: 'inactive' },
+    displayMode: 'static',
+    holdToShowKeys: [],
+    holdToShowImageKeys: [],
+    kanjiReferences: ['radical', 'nelson_r', 'kk', 'unicode', 'henshall'],
+    keys: {
+      toggleDefinition: ['d'],
+      nextDictionary: ['Shift', 'Enter'],
+      expandPopup: ['x'],
+      kanjiLookup: [],
+      pinPopup: ['Ctrl'],
+      startCopy: ['c'],
+    },
+    noTextHighlight: false,
+    popupStyle: 'blue',
+    posDisplay: 'expl',
+    readingOnly: false,
+    showKanjiComponents: true,
+    showPriority: true,
+    showRomaji: false,
+    switchDictionaryKeys: [],
+  };
+  const contentHandler = new ContentHandler(config);
+</script>
+<body>
+  <div>
+    <h2>Contents</h2>
+    <ul id="toc"></ul>
+  </div>
+  <div id="container"></div>
+  <script src="html-tests.js"></script>
+  <script>
+    const toc = document.getElementById('toc');
+    const container = document.getElementById('container');
+
+    const addHeading = (heading, level = 2) => {
+      if (level < 2) {
+        return;
+      }
+
+      const href = heading.replace(/\s/g, '-').toLowerCase();
+      if (level === 2) {
+        const li = toc.appendChild(document.createElement('li'));
+        const a = li.appendChild(document.createElement('a'));
+        a.textContent = heading;
+        a.href = `#${href}`;
+      }
+
+      const headingElement = document.createElement(`h${level}`);
+      headingElement.textContent = heading;
+      headingElement.id = href;
+      container.appendChild(headingElement);
+    };
+
+    const addLabel = (labelText) => {
+      const label = document.createElement('div');
+      label.classList.add('label');
+      label.append(labelText);
+      container.append(label);
+    };
+
+    const createPopupContainer = () => {
+      const popupContainer = document.createElement('div');
+      popupContainer.style.width = 'max-content';
+      container.append(popupContainer);
+      return popupContainer;
+    };
+
+    const getDictFromResult = (queryResult) =>
+      Object.keys(queryResult).find(
+        (key) => key === 'words' || key === 'kanji' || key === 'names'
+      ) || 'words';
+
+    addHeading('Basic results');
+    for (const test of htmlTests) {
+      addLabel(test.description);
+
+      const dictToShow =
+        Object.keys(test.queryResult).find(
+          (key) => key === 'words' || key === 'kanji' || key === 'names'
+        ) || 'words';
+
+      const popup = contentHandler._renderPopup(test.queryResult, {
+        ...config,
+        container: createPopupContainer(),
+        dictLang:
+          test.description.indexOf('language') !== -1 ? 'fr' : undefined,
+        dictToShow: getDictFromResult(test.queryResult),
+        popupStyle: 'blue',
+        showDefinitions: !test.extraConfig || !test.extraConfig.readingOnly,
+        waniKaniVocabDisplay: 'show-matches',
+      });
+      popup.classList.add('-inline');
+    }
+
+    const themes = ['light', 'blue', 'lightblue', 'black', 'yellow'];
+
+    // Interactive mode tests
+
+    addHeading('Interactive mode');
+    const kankokuWordsResult = {
+      words: {
+        type: 'words',
+        data: [
+          {
+            k: [{ ent: '韓国語', p: ['s1'], match: true }],
+            r: [{ ent: 'かんこくご', p: ['s1'], a: 0, match: true }],
+            s: [{ g: [{ str: 'Korean (language)' }], pos: ['n'], match: true }],
+          },
+          {
+            k: [{ ent: '韓国', p: ['n1', 'nf01'], wk: 29, match: true }],
+            r: [{ ent: 'かんこく', p: ['n1', 'nf01'], a: 0, match: true }],
+            s: [
+              {
+                g: [{ str: 'South Korea' }, { str: 'Republic of Korea' }],
+                pos: ['n', 'adj-no'],
+                misc: ['abbr'],
+                match: true,
+              },
+              {
+                g: [{ str: 'Korean Empire (1897-1910)' }],
+                pos: ['n', 'adj-no'],
+                misc: ['abbr'],
+                match: true,
+              },
+            ],
+          },
+          {
+            k: [
+              { ent: '唐国', match: false },
+              { ent: '韓国', match: true },
+            ],
+            r: [{ ent: 'からくに', match: true }],
+            s: [
+              {
+                g: [{ str: 'China' }, { str: 'Korea' }],
+                pos: ['n'],
+                misc: ['arch'],
+                match: true,
+              },
+            ],
+          },
+          {
+            k: [
+              { ent: '唐', match: false },
+              { ent: '韓', match: true },
+              { ent: '漢', match: false },
+            ],
+            r: [{ ent: 'から', a: 1, match: true }],
+            s: [
+              {
+                g: [
+                  {
+                    str: 'China (sometimes also used in ref. to Korea or other foreign countries)',
+                  },
+                ],
+                pos: ['n', 'n-pref'],
+                misc: ['arch'],
+                match: true,
+              },
+            ],
+          },
+        ],
+        more: false,
+        matchLen: 3,
+      },
+      kanji: {
+        type: 'kanji',
+        data: [
+          {
+            c: '士',
+            r: { on: ['シ'], kun: ['さむらい'], na: ['お', 'ま'] },
+            m: ['gentleman', 'scholar', 'samurai', 'samurai radical (no. 33)'],
+            rad: {
+              x: 33,
+              b: '⼠',
+              k: '士',
+              na: ['さむらい'],
+              m: ['gentleman', 'scholar', 'samurai'],
+              m_lang: 'en',
+            },
+            refs: {
+              nelson_c: 1160,
+              nelson_n: 1117,
+              halpern_njecd: 3405,
+              halpern_kkld: 2129,
+              halpern_kkld_2ed: 2877,
+              heisig: 319,
+              heisig6: 341,
+              henshall: 494,
+              sh_kk: 572,
+              sh_kk2: 581,
+              kanji_in_context: 755,
+              kodansha_compact: 393,
+              skip: '4-3-2',
+              sh_desc: '3p0.1',
+              conning: 350,
+            },
+            misc: { sc: 3, gr: 4, freq: 526, jlpt: 1, kk: 7 },
+            m_lang: 'en',
+            comp: [],
+          },
+        ],
+      },
+    };
+
+    addHeading('Interactive mode tabs', 3);
+
+    for (const theme of themes) {
+      const label = document.createElement('div');
+      label.classList.add('label');
+      label.append(`Theme: ${theme}`);
+      container.append(label);
+
+      const popup = contentHandler._renderPopup(kankokuWordsResult, {
+        ...config,
+        container: createPopupContainer(),
+        displayMode: 'touch',
+        dictToShow: 'words',
+        popupStyle: theme,
+        showDefinitions: true,
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+        waniKaniVocabDisplay: 'show-matches',
+      });
+      popup.classList.add('-inline');
+    }
+
+    addHeading('Ghost mode', 3);
+
+    for (const theme of themes) {
+      const label = document.createElement('div');
+      label.classList.add('label');
+      label.append(`Theme: ${theme}`);
+      container.append(label);
+
+      const popup = contentHandler._renderPopup(kankokuWordsResult, {
+        ...config,
+        container: createPopupContainer(),
+        displayMode: 'ghost',
+        dictToShow: 'words',
+        popupStyle: theme,
+        showDefinitions: true,
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+      });
+      popup.classList.add('-inline');
+    }
+
+    // Database status tests
+
+    addHeading('Database status');
+    const dbUpdatingTest = { ...kankokuWordsResult, resultType: 'db-updating' };
+
+    for (const theme of themes) {
+      addLabel(`Theme: ${theme}`);
+      const popup = contentHandler._renderPopup(dbUpdatingTest, {
+        ...config,
+        container: createPopupContainer(),
+        dictToShow: 'words',
+        displayMode: 'touch',
+        popupStyle: theme,
+        showDefinitions: true,
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+      });
+      popup.classList.add('-inline');
+    }
+
+    // Close button only test
+
+    addHeading('Close button only', 3);
+    {
+      const popup = contentHandler._renderPopup(
+        { ...kankokuWordsResult, resultType: 'db-unavailable' },
+        {
+          ...config,
+          container: createPopupContainer(),
+          displayMode: 'touch',
+          dictToShow: 'words',
+          popupStyle: 'default',
+          showDefinitions: true,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        }
+      );
+      popup.classList.add('-inline');
+    }
+
+    addLabel('Close button with status bar');
+    {
+      const popup = contentHandler._renderPopup(
+        { ...kankokuWordsResult, resultType: 'db-updating' },
+        {
+          ...config,
+          container: createPopupContainer(),
+          dictToShow: 'words',
+          displayMode: 'touch',
+          popupStyle: 'default',
+          showDefinitions: true,
+          tabDisplay: 'none',
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        }
+      );
+      popup.classList.add('-inline');
+    }
+
+    // Tabs on the side
+
+    addHeading('Tabs on the side');
+    {
+      const popup = contentHandler._renderPopup(kankokuWordsResult, {
+        ...config,
+        container: createPopupContainer(),
+        dictToShow: 'words',
+        popupStyle: 'default',
+        showDefinitions: true,
+        switchDictionaryKeys: ['Shift', 'Enter'],
+        tabDisplay: 'right',
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+      });
+      popup.classList.add('-inline');
+    }
+
+    // Tabs on the side in interactive mode
+
+    addHeading('Tabs on the side (interactive display mode)', 3);
+    {
+      const popup = contentHandler._renderPopup(kankokuWordsResult, {
+        ...config,
+        container: createPopupContainer(),
+        dictToShow: 'words',
+        displayMode: 'touch',
+        popupStyle: 'default',
+        showDefinitions: true,
+        switchDictionaryKeys: ['Shift', 'Enter'],
+        tabDisplay: 'right',
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+      });
+      popup.classList.add('-inline');
+    }
+
+    // Constrained height tests
+
+    addHeading('Constrained height');
+
+    for (const tabDisplay of ['top', 'right', 'none']) {
+      {
+        addHeading(`Tab display: ${tabDisplay}`, 3);
+        const popup = contentHandler._renderPopup(kankokuWordsResult, {
+          ...config,
+          container: createPopupContainer(),
+          dictToShow: 'words',
+          popupStyle: 'default',
+          showDefinitions: true,
+          switchDictionaryKeys: ['Shift', 'Enter'],
+          tabDisplay,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        });
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--max-height', '200px');
+      }
+
+      {
+        addHeading(`Tab display: ${tabDisplay} (with status bar)`, 3);
+        const popup = contentHandler._renderPopup(
+          { ...kankokuWordsResult, resultType: 'db-updating' },
+          {
+            ...config,
+            container: createPopupContainer(),
+            dictToShow: 'words',
+            popupStyle: 'default',
+            showDefinitions: true,
+            switchDictionaryKeys: ['Shift', 'Enter'],
+            tabDisplay,
+            onClosePopup: () => {},
+            onShowSettings: () => {},
+            onTogglePin: () => {},
+          }
+        );
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--max-height', '200px');
+      }
+
+      {
+        addHeading(`Tab display: ${tabDisplay} (interactive version)`, 3);
+        const popup = contentHandler._renderPopup(kankokuWordsResult, {
+          ...config,
+          container: createPopupContainer(),
+          dictToShow: 'words',
+          displayMode: 'touch',
+          popupStyle: 'default',
+          showDefinitions: true,
+          switchDictionaryKeys: ['Shift', 'Enter'],
+          tabDisplay,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        });
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--max-height', '200px');
+      }
+
+      {
+        addHeading(
+          `Tab display: ${tabDisplay} (interactive version with status bar)`,
+          3
+        );
+        const popup = contentHandler._renderPopup(
+          { ...kankokuWordsResult, resultType: 'db-updating' },
+          {
+            ...config,
+            container: createPopupContainer(),
+            dictToShow: 'words',
+            displayMode: 'touch',
+            popupStyle: 'default',
+            showDefinitions: true,
+            switchDictionaryKeys: ['Shift', 'Enter'],
+            tabDisplay,
+            onClosePopup: () => {},
+            onShowSettings: () => {},
+            onTogglePin: () => {},
+          }
+        );
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--max-height', '200px');
+      }
+    }
+
+    addHeading('Forced height');
+
+    for (const tabDisplay of ['top', 'right', 'none']) {
+      {
+        addHeading(`Tab display: ${tabDisplay}`, 3);
+        const popup = contentHandler._renderPopup(kankokuWordsResult, {
+          ...config,
+          container: createPopupContainer(),
+          dictToShow: 'words',
+          popupStyle: 'default',
+          showDefinitions: true,
+          switchDictionaryKeys: ['Shift', 'Enter'],
+          tabDisplay,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        });
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--min-height', '400px');
+      }
+
+      {
+        addHeading(`Tab display: ${tabDisplay} (with status bar)`, 3);
+        const popup = contentHandler._renderPopup(
+          { ...kankokuWordsResult, resultType: 'db-updating' },
+          {
+            ...config,
+            container: createPopupContainer(),
+            dictToShow: 'words',
+            popupStyle: 'default',
+            showDefinitions: true,
+            switchDictionaryKeys: ['Shift', 'Enter'],
+            tabDisplay,
+            onClosePopup: () => {},
+            onShowSettings: () => {},
+            onTogglePin: () => {},
+          }
+        );
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--min-height', '400px');
+      }
+
+      {
+        addHeading(`Tab display: ${tabDisplay} (interactive version)`, 3);
+        const popup = contentHandler._renderPopup(kankokuWordsResult, {
+          ...config,
+          container: createPopupContainer(),
+          dictToShow: 'words',
+          displayMode: 'touch',
+          popupStyle: 'default',
+          showDefinitions: true,
+          switchDictionaryKeys: ['Shift', 'Enter'],
+          tabDisplay,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        });
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--min-height', '400px');
+      }
+
+      {
+        addHeading(
+          `Tab display: ${tabDisplay} (interactive version with status bar)`,
+          3
+        );
+        const popup = contentHandler._renderPopup(
+          { ...kankokuWordsResult, resultType: 'db-updating' },
+          {
+            ...config,
+            container: createPopupContainer(),
+            dictToShow: 'words',
+            displayMode: 'touch',
+            popupStyle: 'default',
+            showDefinitions: true,
+            switchDictionaryKeys: ['Shift', 'Enter'],
+            tabDisplay,
+            onClosePopup: () => {},
+            onShowSettings: () => {},
+            onTogglePin: () => {},
+          }
+        );
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--min-height', '400px');
+      }
+
+      {
+        addHeading(
+          `Tab display: ${tabDisplay} (interactive version with copy overlay)`,
+          3
+        );
+        const popup = contentHandler._renderPopup(kankokuWordsResult, {
+          ...config,
+          container: createPopupContainer(),
+          copyState: { kind: 'active', index: 1, mode: 'touch' },
+          dictToShow: 'words',
+          displayMode: 'hover',
+          popupStyle: 'default',
+          showDefinitions: true,
+          switchDictionaryKeys: ['Shift', 'Enter'],
+          tabDisplay,
+          onClosePopup: () => {},
+          onShowSettings: () => {},
+          onTogglePin: () => {},
+        });
+
+        popup.classList.add('-inline');
+        popup.style.setProperty('--min-height', '400px');
+      }
+    }
+
+    // Copy mode highlight tests
+
+    addHeading('Copy mode');
+    const highlightTests = [
+      {
+        description: 'Word list',
+        queryResult: {
+          words: {
+            type: 'words',
+            data: [
+              {
+                k: [{ ent: '韓国語', p: ['s1'], match: true }],
+                r: [{ ent: 'かんこくご', p: ['s1'], a: 0, match: true }],
+                s: [
+                  {
+                    g: [{ str: 'Korean (language)' }],
+                    pos: ['n'],
+                    match: true,
+                  },
+                ],
+              },
+              {
+                k: [{ ent: '韓国', p: ['n1', 'nf01'], match: true }],
+                r: [{ ent: 'かんこく', p: ['n1', 'nf01'], a: 0, match: true }],
+                s: [
+                  {
+                    g: [{ str: 'South Korea' }, { str: 'Republic of Korea' }],
+                    pos: ['n', 'adj-no'],
+                    misc: ['abbr'],
+                    match: true,
+                  },
+                  {
+                    g: [{ str: 'Korean Empire (1897-1910)' }],
+                    pos: ['n', 'adj-no'],
+                    misc: ['abbr'],
+                    match: true,
+                  },
+                ],
+              },
+              {
+                k: [
+                  { ent: '唐国', match: false },
+                  { ent: '韓国', match: true },
+                ],
+                r: [{ ent: 'からくに', match: true }],
+                s: [
+                  {
+                    g: [{ str: 'China' }, { str: 'Korea' }],
+                    pos: ['n'],
+                    misc: ['arch'],
+                    match: true,
+                  },
+                ],
+              },
+              {
+                k: [
+                  { ent: '唐', match: false },
+                  { ent: '韓', match: true },
+                  { ent: '漢', match: false },
+                ],
+                r: [{ ent: 'から', a: 1, match: true }],
+                s: [
+                  {
+                    g: [
+                      {
+                        str: 'China (sometimes also used in ref. to Korea or other foreign countries)',
+                      },
+                    ],
+                    pos: ['n', 'n-pref'],
+                    misc: ['arch'],
+                    match: true,
+                  },
+                ],
+              },
+            ],
+            more: false,
+            matchLen: 3,
+          },
+        },
+      },
+      {
+        description: 'Name entry',
+        queryResult: {
+          names: {
+            type: 'names',
+            data: [
+              {
+                k: ['中野'],
+                r: ['なかの'],
+                tr: [{ type: ['surname', 'fem', 'masc'], det: ['Nakano'] }],
+              },
+            ],
+            more: false,
+            matchLen: 2,
+            names: true,
+          },
+        },
+      },
+      {
+        description: 'Kanji entry',
+        queryResult: {
+          kanji: {
+            type: 'kanji',
+            data: [
+              {
+                c: '士',
+                r: { on: ['シ'], kun: ['さむらい'], na: ['お', 'ま'] },
+                m: [
+                  'gentleman',
+                  'scholar',
+                  'samurai',
+                  'samurai radical (no. 33)',
+                ],
+                rad: {
+                  x: 33,
+                  b: '⼠',
+                  k: '士',
+                  na: ['さむらい'],
+                  m: ['gentleman', 'scholar', 'samurai'],
+                  m_lang: 'en',
+                },
+                refs: {
+                  nelson_c: 1160,
+                  nelson_n: 1117,
+                  halpern_njecd: 3405,
+                  halpern_kkld: 2129,
+                  halpern_kkld_2ed: 2877,
+                  heisig: 319,
+                  heisig6: 341,
+                  henshall: 494,
+                  sh_kk: 572,
+                  sh_kk2: 581,
+                  kanji_in_context: 755,
+                  kodansha_compact: 393,
+                  skip: '4-3-2',
+                  sh_desc: '3p0.1',
+                  conning: 350,
+                },
+                misc: { sc: 3, gr: 4, freq: 526, jlpt: 1, kk: 7 },
+                m_lang: 'en',
+                comp: [],
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    for (const test of highlightTests) {
+      const testConfig = {
+        ...config,
+        copyNextKey: 'c',
+        copyState: { kind: 'active', index: 1, mode: 'keyboard' },
+        dictToShow: getDictFromResult(test.queryResult),
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+        showDefinitions: true,
+      };
+
+      addHeading(test.description, 3);
+      for (const theme of themes) {
+        addLabel(`Theme: ${theme}`);
+        const popup = contentHandler._renderPopup(test.queryResult, {
+          ...testConfig,
+          container: createPopupContainer(),
+          popupStyle: theme,
+        });
+        popup.classList.add('-inline');
+      }
+
+      addHeading(`${test.description} (interactive version)`, 3);
+      for (const theme of themes) {
+        addLabel(`Theme: ${theme}`);
+        const popup = contentHandler._renderPopup(test.queryResult, {
+          ...testConfig,
+          copyState: { ...testConfig.copyState, mode: 'touch' },
+          container: createPopupContainer(),
+          displayMode: 'touch',
+          popupStyle: theme,
+        });
+        popup.classList.add('-inline');
+      }
+    }
+
+    {
+      const testConfig = {
+        ...config,
+        copyNextKey: 'c',
+        copyState: { kind: 'error', index: 1, mode: 'keyboard' },
+        dictToShow: getDictFromResult(highlightTests[0].queryResult),
+        onClosePopup: () => {},
+        onShowSettings: () => {},
+        onTogglePin: () => {},
+        showDefinitions: true,
+      };
+
+      addHeading('Copy error', 3);
+      for (const theme of themes) {
+        addLabel(`Theme: ${theme}`);
+        const popup = contentHandler._renderPopup(
+          highlightTests[0].queryResult,
+          {
+            ...testConfig,
+            container: createPopupContainer(),
+            popupStyle: theme,
+          }
+        );
+        popup.classList.add('-inline');
+      }
+
+      addHeading('Copy error (interactive version)', 3);
+      for (const theme of themes) {
+        addLabel(`Theme: ${theme}`);
+        const popup = contentHandler._renderPopup(
+          highlightTests[0].queryResult,
+          {
+            ...testConfig,
+            copyState: { ...testConfig.copyState, mode: 'touch' },
+            container: createPopupContainer(),
+            displayMode: 'touch',
+            popupStyle: theme,
+          }
+        );
+        popup.classList.add('-inline');
+      }
+    }
+  </script>
+</body>

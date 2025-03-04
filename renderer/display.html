@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Display</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: transparent;
+      height: 100vh;
+    }
+
+    #interface-container {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      width: 300px;
+      height: 200px;
+      min-width: 100px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #drag-handle {
+      height: 20px;
+      background-color: #cccccc;
+      cursor: move;
+      text-align: center;
+      line-height: 20px;
+    }
+
+    #display-text {
+      flex: 1;
+      overflow: auto;
+      padding: 0 5px;
+      border: 1px solid #ccc;
+    }
+
+    #display-text > :first-child {
+      margin-top: 0;
+    }
+
+    #display-text > :last-child {
+      margin-bottom: 0;
+    }
+
+    #hamburger-menu {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 30px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .hamburger-line {
+      width: 100%;
+      height: 2px;
+      background-color: #000;
+      margin: 4px 0;
+    }
+
+    #options-menu {
+      position: absolute;
+      width: 200px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      display: none;
+      padding: 10px;
+    }
+
+    #toolbar {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #toolbar > div {
+      margin-bottom: 10px;
+    }
+
+    .resize-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #000000; /* Black resize handles */
+    }
+
+    .resize-handle.top-left {
+      top: 0;
+      left: 0;
+      cursor: nwse-resize;
+    }
+
+    .resize-handle.top-right {
+      top: 0;
+      right: 0;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle.bottom-left {
+      bottom: 0;
+      left: 0;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle.bottom-right {
+      bottom: 0;
+      right: 0;
+      cursor: nwse-resize;
+    }
+  </style>
+</head>
+<body>
+  <div id="interface-container">
+    <div id="drag-handle">Drag here</div>
+    <div id="display-text"></div>
+    <div id="hamburger-menu">
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+    </div>
+    <div class="resize-handle top-left"></div>
+    <div class="resize-handle top-right"></div>
+    <div class="resize-handle bottom-left"></div>
+    <div class="resize-handle bottom-right"></div>
+  </div>
+  <div id="options-menu">
+    <div id="toolbar">
+      <div>
+        <label for="font-size-slider">Font Size:</label>
+        <input type="range" id="font-size-slider" min="10" max="50" step="1" value="16">
+      </div>
+      <div>
+        <label for="font-color-selector">Font Color:</label>
+        <input type="color" id="font-color-selector" value="#000000">
+      </div>
+      <div>
+        <label for="bg-color-selector">Background Color:</label>
+        <input type="color" id="bg-color-selector" value="#ffffff">
+      </div>
+      <div>
+        <label for="font-selector">Font:</label>
+        <select id="font-selector">
+          <option value="Arial">Arial</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+        </select>
+      </div>
+      <div>
+        <label for="alignment-selector">Alignment:</label>
+        <select id="alignment-selector">
+          <option value="left">Left-aligned</option>
+          <option value="center">Centered</option>
+          <option value="vertical">Vertical RTL</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <script src="config.js" type="module"></script>
+</body>
+</html>

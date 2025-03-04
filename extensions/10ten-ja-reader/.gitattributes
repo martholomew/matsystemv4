@@ -1,0 +1,2 @@
+data/*.idx text eol=lf
+data/*.ljson text eol=lf
