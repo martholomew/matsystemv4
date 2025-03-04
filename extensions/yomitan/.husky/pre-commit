@@ -1,2 +1,0 @@
-echo "Husky pre-commit hook"
-npx lint-staged
