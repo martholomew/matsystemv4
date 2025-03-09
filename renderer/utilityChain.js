@@ -1,5 +1,5 @@
 import { refreshSelectedThreadOutput } from './threadSelection.js';
-import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters, deleteFurigana } from './utils.js';
+import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters, removeFurigana } from './utils.js';
 import Sortable from './sortable.complete.esm.js';
 
 export let utilityChain = [];
