@@ -8,12 +8,17 @@ const selectedThreadOutputElement = document.getElementById('selected-thread-out
 let threadOutputs = {};
 export let selectedThreadId = null;
 let savedConfig = null;
+let currentExeName = '';
 
 window.ipc.onConfigurationLoaded((config) => {
   savedConfig = config;
   if (config) {
     setUtilityChain(config.utilityChain);
   }
+});
+
+window.ipc.onProcessDetails((details) => {
+  currentExeName = details.name;
 });
 
 export function resetThreadSelection() {
@@ -23,6 +28,7 @@ export function resetThreadSelection() {
   selectedThreadId = null;
   selectedThreadOutputElement.innerHTML = '';
   savedConfig = null;
+  currentExeName = '';
 }
 
 function applySavedConfiguration() {
@@ -70,20 +76,20 @@ function createThreadList(threadIds) {
 function displaySelectedThreadOutput() {
   if (!selectedThreadId) {
     selectedThreadOutputElement.innerHTML = '';
-    window.ipc.sendText('');
+    window.ipc.sendText({ text: '', exeName: currentExeName });
     return;
   }
   let latestOutput = threadOutputs[selectedThreadId];
   if (!latestOutput) {
     selectedThreadOutputElement.innerHTML = '<p>No output yet for this thread.</p>';
-    window.ipc.sendText('<p>No output yet for this thread.</p>');
+    window.ipc.sendText({ text: '<p>No output yet for this thread.</p>', exeName: currentExeName });
     return;
   }
 
   latestOutput = applyUtilityChain(latestOutput);
   const formattedOutput = `<p>${latestOutput}</p>`;
   selectedThreadOutputElement.innerHTML = formattedOutput;
-  window.ipc.sendText(formattedOutput);
+  window.ipc.sendText({ text: formattedOutput, exeName: currentExeName });
 }
 
 export function refreshSelectedThreadOutput() {

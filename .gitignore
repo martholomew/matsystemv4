@@ -132,3 +132,4 @@ dist
 # extra ignores
 .webpack/
 yarn.lock
+package-lock.json

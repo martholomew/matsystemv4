@@ -16,11 +16,13 @@ contextBridge.exposeInMainWorld('ipc', {
     ipcRenderer.on('lunahost-thread', (event, output) => callback(output)),
   onError: (callback) =>
     ipcRenderer.on('error', (event, error) => callback(error)),
-  sendText: (text) => ipcRenderer.send('send-text-to-second', text),
+  sendText: (data) => ipcRenderer.send('send-text-to-second', data),
   onUpdateText: (callback) =>
-    ipcRenderer.on('update-text', (event, text) => callback(text)),
+    ipcRenderer.on('update-text', (event, data) => callback(data)),
   saveConfiguration: (exeName, config) => ipcRenderer.send('saveConfiguration', exeName, config),
   onConfigurationLoaded: (callback) => ipcRenderer.on('configurationLoaded', (event, config) => callback(config)),
   openNewWindow: () => ipcRenderer.send('open-new-window'),
   setIgnoreMouseEvents: (ignore) => ipcRenderer.send('set-ignore-mouse-events', ignore),
+  sendBounds: (bounds) => ipcRenderer.send('set-bounds', bounds),
+  getConfiguration: (exeName) => ipcRenderer.invoke('get-configuration', exeName),
 });

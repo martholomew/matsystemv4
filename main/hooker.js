@@ -26,6 +26,11 @@ const BLACKLISTED_PROCESSES = [
   'tabtip.exe'
 ];
 
+const state = {
+  currentText: '',
+  currentExeName: ''
+};
+
 async function getExeProcesses() {
   const processes = await psList.default();
   return processes
@@ -316,17 +321,29 @@ export async function setupHooker() {
     });
   });
 
-  ipcMain.on('send-text-to-second', (event, text) => {
+  ipcMain.on('send-text-to-second', (event, data) => {
+    state.currentText = data.text || '';
+    state.currentExeName = data.exeName || '';
+  
     BrowserWindow.getAllWindows().forEach((win) => {
       if (win.webContents !== event.sender && !win.isDestroyed()) {
-        win.webContents.send('update-text', text);
+        win.webContents.send('update-text', data);
       }
     });
   });
 
   ipcMain.on('saveConfiguration', (event, exeName, configData) => {
-    config[exeName] = configData;
+    config[exeName] = {
+        ...config[exeName],
+        ...configData
+    };
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     console.log(`Saved configuration for ${exeName} to ${configPath}`);
+});
+
+  ipcMain.handle('get-configuration', (event, exeName) => {
+    return config[exeName] || null;
   });
 }
+
+export { state };

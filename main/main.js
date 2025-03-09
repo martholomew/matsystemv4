@@ -2,7 +2,7 @@ const path = require('path')
 const { app, session, BrowserWindow, Menu, ipcMain } = require('electron')
 const { ElectronChromeExtensions } = require('electron-chrome-extensions')
 const { buildChromeContextMenu } = require('electron-chrome-context-menu')
-const { setupHooker } = require('./hooker.js')
+const { setupHooker, state } = require('./hooker.js')
 
 setupHooker();
 
@@ -203,9 +203,9 @@ class Browser {
         session: this.session,
         extensions: this.extensions,
         window: {
-          fullscreen: true,
           frame: false,
           transparent: true,
+          show: false,
           hasShadow: isMac ? false : undefined,
           webPreferences: {
             sandbox: true,
@@ -216,23 +216,41 @@ class Browser {
           },
         },
       });
-      win.window.setAlwaysOnTop(true, "normal");
-      // win.window.setIgnoreMouseEvents(false);
-      win.window.openDevTools()
+    
+      win.window.once('ready-to-show', () => {
+        win.window.maximize();
+        win.window.show();
+      });
+    
+      win.window.once('show', () => {
+        win.window.focus();
+        win.window.setAlwaysOnTop(true, 'screen-saver');
+        if (state.currentExeName) {
+          win.webContents.send('update-text', { text: state.currentText, exeName: state.currentExeName });
+        }
+      });
+    
       this.windows.push(win);
     });
 
-    // ipcMain.on('set-ignore-mouse-events', (event, ignore) => {
-    //   const win = BrowserWindow.fromWebContents(event.sender);
-    //   if (win) {
-    //     if (ignore) {
-    //       win.setIgnoreMouseEvents(true, { forward: true });
-    //     } else {
-    //       win.setIgnoreMouseEvents(false);
-    //     }
-    //   }
-    //   console.log(`change ignoremouseevents: ${ignore}`)
-    // });
+    ipcMain.on('set-bounds', (event, bounds) => {
+      console.log('Received bounds:', bounds);
+      const win = BrowserWindow.fromWebContents(event.sender);
+      if (win) {
+        if (bounds === 'full') {
+          const { width, height } = win.getBounds();
+          win.setShape([{ x: 0, y: 0, width, height }]);
+        } else {
+          const shapes = bounds.map(b => ({
+            x: Math.round(b.x),
+            y: Math.round(b.y),
+            width: Math.round(b.width),
+            height: Math.round(b.height)
+          }));
+          win.setShape(shapes);
+        }
+      }
+    });
   }
 
   initSession() {

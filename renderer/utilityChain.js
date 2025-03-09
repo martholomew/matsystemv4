@@ -1,5 +1,5 @@
 import { refreshSelectedThreadOutput } from './threadSelection.js';
-import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters } from './utils.js';
+import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters, deleteFurigana } from './utils.js';
 import Sortable from './sortable.complete.esm.js';
 
 export let utilityChain = [];
@@ -42,6 +42,8 @@ export function applyUtilityChain(text) {
         return deleteDuplicateLines(currentText);
       case 'deleteDuplicateLetters':
         return deleteDuplicateLetters(currentText);
+      case 'removeFurigana':
+        return removeFurigana(currentText);
       default:
         return currentText;
     }

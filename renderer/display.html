@@ -20,6 +20,91 @@
       min-height: 100px;
       display: flex;
       flex-direction: column;
+      overflow: auto;
+      background-color: #fff;
+      border: 1px solid #ccc;
+    }
+
+    #interface-container:hover {
+      cursor: default;
+    }
+
+    #interface-container {
+      --resize-width: 8px;
+    }
+
+    .top-edge {
+      position: absolute;
+      top: 0;
+      left: var(--resize-width);
+      width: calc(100% - 2 * var(--resize-width));
+      height: var(--resize-width);
+      cursor: n-resize;
+      pointer-events: auto;
+    }
+
+    .bottom-edge {
+      position: absolute;
+      bottom: 0;
+      left: var(--resize-width);
+      width: calc(100% - 2 * var(--resize-width));
+      height: var(--resize-width);
+      cursor: s-resize;
+      pointer-events: auto;
+    }
+
+    .left-edge, .right-edge, .top-left-corner, .top-right-corner,
+    .bottom-left-corner, .bottom-right-corner {
+      position: absolute;
+      pointer-events: auto;
+    }
+
+    .left-edge {
+      top: var(--resize-width);
+      left: 0;
+      width: var(--resize-width);
+      height: calc(100% - 2 * var(--resize-width));
+      cursor: w-resize;
+    }
+
+    .right-edge {
+      top: var(--resize-width);
+      right: 0;
+      width: var(--resize-width);
+      height: calc(100% - 2 * var(--resize-width));
+      cursor: e-resize;
+    }
+
+    .top-left-corner {
+      top: 0;
+      left: 0;
+      width: var(--resize-width);
+      height: var(--resize-width);
+      cursor: nw-resize;
+    }
+
+    .top-right-corner {
+      top: 0;
+      right: 0;
+      width: var(--resize-width);
+      height: var(--resize-width);
+      cursor: ne-resize;
+    }
+
+    .bottom-left-corner {
+      bottom: 0;
+      left: 0;
+      width: var(--resize-width);
+      height: var(--resize-width);
+      cursor: sw-resize;
+    }
+
+    .bottom-right-corner {
+      bottom: 0;
+      right: 0;
+      width: var(--resize-width);
+      height: var(--resize-width);
+      cursor: se-resize;
     }
 
     #drag-handle {
@@ -28,6 +113,7 @@
       cursor: move;
       text-align: center;
       line-height: 20px;
+      user-select: none;
     }
 
     #display-text {
@@ -35,6 +121,7 @@
       overflow: auto;
       padding: 0 5px;
       border: 1px solid #ccc;
+      user-select: none;
     }
 
     #display-text > :first-child {
@@ -78,58 +165,39 @@
     #toolbar > div {
       margin-bottom: 10px;
     }
-
-    .resize-handle {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #000000; /* Black resize handles */
-    }
-
-    .resize-handle.top-left {
-      top: 0;
-      left: 0;
-      cursor: nwse-resize;
-    }
-
-    .resize-handle.top-right {
-      top: 0;
-      right: 0;
-      cursor: nesw-resize;
-    }
-
-    .resize-handle.bottom-left {
-      bottom: 0;
-      left: 0;
-      cursor: nesw-resize;
-    }
-
-    .resize-handle.bottom-right {
-      bottom: 0;
-      right: 0;
-      cursor: nwse-resize;
-    }
   </style>
 </head>
 <body>
-  <div id="interface-container">
+  <div id="interface-container" class="hover-element">
     <div id="drag-handle">Drag here</div>
-    <div id="display-text"></div>
+    <div id="display-text">左右交互 (test text)</div>
     <div id="hamburger-menu">
       <div class="hamburger-line"></div>
       <div class="hamburger-line"></div>
       <div class="hamburger-line"></div>
     </div>
-    <div class="resize-handle top-left"></div>
-    <div class="resize-handle top-right"></div>
-    <div class="resize-handle bottom-left"></div>
-    <div class="resize-handle bottom-right"></div>
+    <div class="resize-handle left-edge"></div>
+    <div class="resize-handle right-edge"></div>
+    <div class="resize-handle top-edge"></div>
+    <div class="resize-handle bottom-edge"></div>
+    <div class="resize-handle top-left-corner"></div>
+    <div class="resize-handle top-right-corner"></div>
+    <div class="resize-handle bottom-left-corner"></div>
+    <div class="resize-handle bottom-right-corner"></div>
   </div>
-  <div id="options-menu">
+  <div id="options-menu" class="hover-element">
     <div id="toolbar">
       <div>
         <label for="font-size-slider">Font Size:</label>
         <input type="range" id="font-size-slider" min="10" max="50" step="1" value="16">
+      </div>
+      <div>
+        <label for="line-height-slider">Line Height:</label>
+        <input type="range" id="line-height-slider" min="1" max="3" step="0.1" value="1.5">
+      </div>
+      <div>
+        <label for="indent-slider">Indent (em):</label>
+        <input type="range" id="indent-slider" min="0" max="5" step="0.1" value="1">
       </div>
       <div>
         <label for="font-color-selector">Font Color:</label>
@@ -157,8 +225,16 @@
           <option value="vertical">Vertical RTL</option>
         </select>
       </div>
+      <div>
+        <label for="hover-visibility">Hover Visibility:</label>
+        <input type="checkbox" id="hover-visibility">
+      </div>
+      <div>
+        <button id="save-config-btn">Save Configuration</button>
+      </div>
     </div>
   </div>
-  <script src="config.js" type="module"></script>
+  <script src="uiConfig.js" type="module"></script>
+  <script src="clickThrough.js" type="module"></script>
 </body>
 </html>

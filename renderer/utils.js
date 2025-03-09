@@ -25,5 +25,9 @@ export function regexReplacement(text, pattern, replacement) {
   }
   
   export function deleteDuplicateLetters(text) {
-    return text.split(/\s+/).map(word => word.replace(/(.)\1+/g, '$1')).join(' ');
+    return text.replace(/(.)\1/g, '$1');
+  }
+
+  export function removeFurigana(text) {
+    return text.replace(/\[.*?\]/g, '');
   }

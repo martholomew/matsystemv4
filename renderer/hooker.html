@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>New Tab</title>
+  <title>Configuration</title>
   <style>
     #process-list { 
       list-style: none; 
@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <h1>Select a Process <button id="refresh-button">Refresh</button></h1>
+  <h1>Select a Process 左右交互 <button id="refresh-button">Refresh</button></h1>
   <ul id="process-list"></ul>
   
   <h2>Log (Errors and Thread ID 0)</h2>
@@ -49,6 +49,7 @@
         <option value="regexFiltering">Regex Filtering</option>
         <option value="deleteDuplicateLines">Delete Duplicate Lines</option>
         <option value="deleteDuplicateLetters">Delete Duplicate Letters</option>
+        <option value="removeFurigana">Remove Furigana</option>
     </select>
     <div id="utility-params"></div>
     <button id="add-utility">Add Utility</button>
