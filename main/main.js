@@ -196,7 +196,7 @@ class Browser {
     this.resolveReady()
 
     ipcMain.on('open-new-window', () => {
-      const displayUrl = `file://${path.join(__dirname, '../renderer/display.html')}`;
+      const displayUrl = `file://${path.join(__dirname, '../renderer/popup/popup.html')}`;
       const isMac = process.platform === 'darwin';
       const win = new TabbedBrowserWindow({
         initialUrl: displayUrl,
@@ -283,7 +283,7 @@ class Browser {
       extensions: this.extensions,
       window: {
         width: 1280,
-        height: 720,
+        height: 650,
         // transparent: true,
         // frame: false,
         // titleBarStyle: 'hidden',
@@ -311,7 +311,7 @@ class Browser {
   }
 
   createInitialWindow() {
-    const fileUrl = `file://${path.join(__dirname, '../renderer/hooker.html')}`;
+    const fileUrl = `file://${path.join(__dirname, '../renderer/hooker/hooker_config.html')}`;
     this.createWindow({ initialUrl: fileUrl });
   }
 

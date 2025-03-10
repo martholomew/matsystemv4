@@ -7,7 +7,7 @@ export let selectedProcessName = null;
 
 async function loadProcessList() {
   refreshButton.disabled = true;
-  refreshButton.textContent = 'Refreshing...';
+  refreshButton.textContent = '🗘';
 
   try {
     const processes = await window.ipc.getProcessList();
@@ -16,18 +16,30 @@ async function loadProcessList() {
     console.error('Error fetching process list:', error);
   } finally {
     refreshButton.disabled = false;
-    refreshButton.textContent = 'Refresh';
+    refreshButton.textContent = '🗘';
   }
 }
 
 function displayProcessList(processes) {
-  const listElement = document.getElementById('process-list');
-  listElement.innerHTML = '';
+  const selectElement = document.getElementById('process-list');
+  selectElement.innerHTML = '<option disabled selected>Select an Application...</option>';
+  
   processes.forEach((proc, index) => {
-    const item = document.createElement('li');
-    item.textContent = `${index + 1}. ${proc.name} (PID: ${proc.pid})`;
-    item.addEventListener('click', () => selectProcess(proc));
-    listElement.appendChild(item);
+    const option = document.createElement('option');
+    option.textContent = `${proc.name} (PID: ${proc.pid})`;
+    option.value = index;
+    selectElement.appendChild(option);
+  });
+  
+  const newSelectElement = selectElement.cloneNode(true);
+  selectElement.parentNode.replaceChild(newSelectElement, selectElement);
+  
+  newSelectElement.addEventListener('change', (event) => {
+    const selectedIndex = event.target.value;
+    if (selectedIndex !== '') {
+      const selectedProcess = processes[selectedIndex];
+      selectProcess(selectedProcess);
+    }
   });
 }
 

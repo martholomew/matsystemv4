@@ -2,7 +2,6 @@ import { applyUtilityChain } from './utilityChain.js';
 import { updateThreadSection } from './threadOutputs.js';
 import { setUtilityChain } from './utilityChain.js';
 
-const threadListElement = document.getElementById('thread-list');
 const selectedThreadOutputElement = document.getElementById('selected-thread-output');
 
 let threadOutputs = {};
@@ -14,6 +13,7 @@ window.ipc.onConfigurationLoaded((config) => {
   savedConfig = config;
   if (config) {
     setUtilityChain(config.utilityChain);
+    selectedThreadId = config.selectedThreadId; // Set initial selection from config
   }
 });
 
@@ -22,8 +22,20 @@ window.ipc.onProcessDetails((details) => {
 });
 
 export function resetThreadSelection() {
-  threadListElement.innerHTML = '';
-  document.getElementById('thread-outputs').innerHTML = '';
+  let threadInstructions = document.getElementById(`thread-instructions`);
+
+  if (!threadInstructions) {
+    threadInstructions = document.createElement('div');
+    threadInstructions.id = 'thread-instructions';
+    threadInstructions.classList.add('card', 'card-border', 'bg-base-100', 'w-auto');
+    threadInstructions.innerHTML = `<div role="alert" class="alert alert-warning alert-outline p-2 m-2">
+        <span>Please progress the text in the VN</span>
+      </div>`
+    document.getElementById('thread-fieldset').appendChild(threadInstructions);
+    const allThreadElements = document.querySelectorAll('.thread-section')
+    allThreadElements.forEach(element => element.remove());
+  }
+
   threadOutputs = {};
   selectedThreadId = null;
   selectedThreadOutputElement.innerHTML = '';
@@ -31,46 +43,19 @@ export function resetThreadSelection() {
   currentExeName = '';
 }
 
-function applySavedConfiguration() {
-  if (savedConfig && savedConfig.selectedThreadId) {
-    const checkbox = document.querySelector(`input[value="${savedConfig.selectedThreadId}"]`);
-    if (checkbox) {
-      document.querySelectorAll('#thread-list input[type="checkbox"]').forEach((cb) => {
-        cb.checked = false;
-      });
-      checkbox.checked = true;
-      selectedThreadId = savedConfig.selectedThreadId;
-      displaySelectedThreadOutput();
+function onSelect(threadId, isChecked) {
+  if (isChecked) {
+    document.querySelectorAll('#thread-outputs input[type="checkbox"]').forEach((cb) => {
+      if (cb.value !== threadId) cb.checked = false;
+    });
+    selectedThreadId = threadId;
+    displaySelectedThreadOutput();
+  } else {
+    if (selectedThreadId === threadId) {
+      selectedThreadId = null;
+      selectedThreadOutputElement.innerHTML = '';
     }
   }
-}
-
-function createThreadList(threadIds) {
-  threadListElement.innerHTML = '';
-  threadIds.forEach((threadId) => {
-    if (threadId !== '0') {
-      const listItem = document.createElement('li');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = threadId;
-      checkbox.addEventListener('change', (event) => {
-        if (event.target.checked) {
-          document.querySelectorAll('#thread-list input[type="checkbox"]').forEach((cb) => {
-            if (cb !== checkbox) cb.checked = false;
-          });
-          selectedThreadId = threadId;
-          displaySelectedThreadOutput();
-        } else {
-          selectedThreadId = null;
-          selectedThreadOutputElement.innerHTML = '';
-        }
-      });
-      listItem.appendChild(checkbox);
-      listItem.appendChild(document.createTextNode(` Thread ID: ${threadId}`));
-      threadListElement.appendChild(listItem);
-    }
-  });
-  applySavedConfiguration();
 }
 
 function displaySelectedThreadOutput() {
@@ -102,13 +87,9 @@ window.ipc.onLunahostThread((output) => {
 
   threadOutputs[threadId] = output.output;
 
-  if (!document.querySelector(`input[value="${threadId}"]`)) {
-    createThreadList(Object.keys(threadOutputs));
-  }
+  updateThreadSection(output, onSelect, selectedThreadId);
 
   if (selectedThreadId === threadId) {
     displaySelectedThreadOutput();
   }
-
-  updateThreadSection(output);
 });

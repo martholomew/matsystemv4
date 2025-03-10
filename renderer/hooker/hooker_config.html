@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuration</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="md:flex flex-nowrap">
+    <div class="flex flex-col">
+      <fieldset class="fieldset w-auto bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box h-full">
+        <legend class="fieldset-legend">Hooker</legend>
+        <div class="flex">
+          <select id="process-list" class="select w-auto">
+            <option disabled selected>Select an Application...</option>
+          </select>
+          <button id="refresh-button" class="btn">🗘</button>
+        </div>
+      </fieldset> 
+
+      <fieldset class="fieldset w-auto bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box h-full">
+        <legend class="fieldset-legend">Extensions</legend>
+        <browser-action-list id="actions"></browser-action-list>
+      </fieldset> 
+    </div>
+  <fieldset class="fieldset w-full bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box h-60 overflow-y-auto">
+    <legend class="fieldset-legend">Logs</legend>
+    <div class="card card-border bg-base-100 w-auto h-auto">
+        <div id="log">
+        </div>
+    </div>
+  </fieldset>
+</div>
+  
+  <fieldset id="thread-fieldset" class="fieldset w-auto bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box">
+    <legend class="fieldset-legend">Threads</legend>
+    <div id="thread-instructions" class="card card-border bg-base-100 w-auto">
+        <div role="alert" class="alert alert-warning alert-outline p-2 m-2">
+          <span>Please progress the text in the VN</span>
+        </div>
+    </div>
+    <ul id="thread-outputs" class="list bg-base-100 rounded-box">
+    </ul>
+  </fieldset> 
+
+  <div class="xl:flex flex-nowrap">
+  <fieldset class="fieldset xl:w-2/3 w-auto bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box">
+    <legend class="fieldset-legend">Text Utilities</legend>
+    <select id="utility-select" class="select">
+      <option disabled selected class="w-auto">Select a utility...</option>
+      <option value="regexReplacement">Regex Replacement</option>
+      <option value="regexFiltering">Regex Filtering</option>
+      <option value="deleteDuplicateLines">Delete Duplicate Lines</option>
+      <option value="deleteDuplicateLetters">Delete Duplicate Letters</option>
+      <option value="removeFurigana">Remove Furigana</option>
+    </select>
+    <ul id="utility-chain" class="list bg-base-100 rounded-box"></ul>
+    <p class="fieldset-label"></p>
+  </fieldset>
+
+  <fieldset id="thread-fieldset" class="fieldset xl:w-1/3 w-auto bg-base-200 border border-base-300 p-4 mx-4 my-2 rounded-box">
+    <legend class="fieldset-legend">Output</legend>
+    <div class="card card-border bg-base-100 w-auto">
+      <div class="card-body">
+        <div id="selected-thread-output"></div>
+      </div>
+    </div>
+    
+    <div class="flex place-content-end">
+    <button id="save-config" class="btn">Save Config</button>
+    <button id="open-new-window" class="btn">Open Popup</button>
+  </div>
+  </fieldset> 
+</div>
+
+  <script src="utils.js" type="module"></script>
+  <script src="utilityChain.js" type="module"></script>
+  <script src="processList.js" type="module"></script>
+  <script src="logDisplay.js" type="module"></script>
+  <script src="threadOutputs.js" type="module"></script>
+  <script src="threadSelection.js" type="module"></script>
+  <script src="configManager.js" type="module"></script>
+</body>
+</html>

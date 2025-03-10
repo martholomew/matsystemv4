@@ -56,12 +56,14 @@ function renderUtilityChain() {
   
   utilityChain.forEach((utility, index) => {
     const li = document.createElement('li');
+    li.className = 'list-row';
     li.dataset.index = index;
 
     let content = utility.type;
     if (utility.type === 'regexReplacement') {
       const patternInput = document.createElement('input');
       patternInput.type = 'text';
+      patternInput.classList.add('input', 'min-w-50');
       patternInput.value = utility.params.pattern || '';
       patternInput.placeholder = 'Regex pattern';
       patternInput.addEventListener('input', () => {
@@ -73,6 +75,7 @@ function renderUtilityChain() {
 
       const replacementInput = document.createElement('input');
       replacementInput.type = 'text';
+      replacementInput.classList.add('input', 'min-w-50');
       replacementInput.value = utility.params.replacement || '';
       replacementInput.placeholder = 'Replacement';
       replacementInput.addEventListener('input', () => {
@@ -87,6 +90,7 @@ function renderUtilityChain() {
     } else if (utility.type === 'regexFiltering') {
       const patternInput = document.createElement('input');
       patternInput.type = 'text';
+      patternInput.classList.add('input', 'min-w-50');
       patternInput.value = utility.params.pattern || '';
       patternInput.placeholder = 'Regex pattern';
       patternInput.addEventListener('input', () => {
@@ -94,18 +98,31 @@ function renderUtilityChain() {
       });
       li.appendChild(patternInput);
     }
+    const utilityName = document.createElement('p');
+    utilityName.classList.add('list-col-grow', 'text-nowrap');
+    utilityName.innerHTML = content;
 
-    li.insertBefore(document.createTextNode(content + ' '), li.firstChild);
+    li.insertBefore(utilityName, li.firstChild);
+    
+    const dragHandle = document.createElement('p');
+    dragHandle.classList.add('handle', 'select-none', 'text-2xl', 'text-neutral-content');
+    dragHandle.innerHTML = '⁝';
+
+    li.insertBefore(dragHandle, li.firstChild);
 
     const removeButton = document.createElement('button');
-    removeButton.textContent = 'Remove';
+    removeButton.classList.add('btn', 'btn-outline', 'btn-error');
+    removeButton.textContent = '×';
     removeButton.addEventListener('click', () => removeUtility(index));
     li.appendChild(removeButton);
+
+    li.classList.add('items-center');
 
     utilityChainList.appendChild(li);
   });
 
   new Sortable(utilityChainList, {
+    handle: '.handle',
     animation: 150,
     onEnd: (evt) => {
       const fromIndex = evt.oldIndex;
@@ -119,32 +136,11 @@ function renderUtilityChain() {
 }
 
 const utilitySelect = document.getElementById('utility-select');
-const utilityParamsDiv = document.getElementById('utility-params');
-const addUtilityButton = document.getElementById('add-utility');
 
 utilitySelect.addEventListener('change', () => {
   const selectedUtility = utilitySelect.value;
-  utilityParamsDiv.innerHTML = '';
-  if (selectedUtility === 'regexReplacement') {
-    utilityParamsDiv.innerHTML = `
-      <input type="text" id="pattern" placeholder="Regex pattern (e.g., /error/i)">
-      <input type="text" id="replacement" placeholder="Replacement string (e.g., [ERROR])">
-    `;
-  } else if (selectedUtility === 'regexFiltering') {
-    utilityParamsDiv.innerHTML = `
-      <input type="text" id="pattern" placeholder="Regex pattern (e.g., /warning/i)">
-    `;
+  if (selectedUtility) {
+    addUtility(selectedUtility, {});
+    utilitySelect.selectedIndex = 0;
   }
-});
-
-addUtilityButton.addEventListener('click', () => {
-  const selectedUtility = utilitySelect.value;
-  let params = {};
-  if (selectedUtility === 'regexReplacement') {
-    params.pattern = document.getElementById('pattern').value;
-    params.replacement = document.getElementById('replacement').value;
-  } else if (selectedUtility === 'regexFiltering') {
-    params.pattern = document.getElementById('pattern').value;
-  }
-  addUtility(selectedUtility, params);
 });
