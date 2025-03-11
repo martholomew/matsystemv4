@@ -4,8 +4,6 @@ const { ElectronChromeExtensions } = require('electron-chrome-extensions')
 const { buildChromeContextMenu } = require('electron-chrome-context-menu')
 const { setupHooker, state } = require('./hooker.js')
 
-setupHooker();
-
 const ROOT_DIR = path.join(__dirname, '../../')
 const PATHS = {
   PRELOAD: path.join(__dirname, '../renderer/hooker/preload.js'),
@@ -302,6 +300,7 @@ class Browser {
       },
     })
     this.windows.push(win)
+    setupHooker();
 
     if (process.env.SHELL_DEBUG) {
       win.webContents.openDevTools({ mode: 'detach' })

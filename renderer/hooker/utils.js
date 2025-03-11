@@ -31,3 +31,6 @@ export function regexReplacement(text, pattern, replacement) {
   export function removeFurigana(text) {
     return text.replace(/\[.*?\]/g, '');
   }
+  export function removeSpeaker(text) {
+    return text.replace(/[^「]*「/g, '「');
+  }

@@ -1,5 +1,5 @@
 import { refreshSelectedThreadOutput } from './threadSelection.js';
-import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters, removeFurigana } from './utils.js';
+import { regexReplacement, regexFiltering, deleteDuplicateLines, deleteDuplicateLetters, removeFurigana, removeSpeaker } from './utils.js';
 import Sortable from './sortable.complete.esm.js';
 
 export let utilityChain = [];
@@ -42,8 +42,8 @@ export function applyUtilityChain(text) {
         return deleteDuplicateLines(currentText);
       case 'deleteDuplicateLetters':
         return deleteDuplicateLetters(currentText);
-      case 'removeFurigana':
-        return removeFurigana(currentText);
+      case 'removeSpeaker':
+        return removeSpeaker(currentText);
       default:
         return currentText;
     }
@@ -99,22 +99,26 @@ function renderUtilityChain() {
       li.appendChild(patternInput);
     }
     const utilityName = document.createElement('p');
-    utilityName.classList.add('list-col-grow', 'text-nowrap');
+    utilityName.classList.add('text-nowrap');
     utilityName.innerHTML = content;
 
     li.insertBefore(utilityName, li.firstChild);
     
     const dragHandle = document.createElement('p');
-    dragHandle.classList.add('handle', 'select-none', 'text-2xl', 'text-neutral-content');
-    dragHandle.innerHTML = '⁝';
+    dragHandle.classList.add('handle', 'select-none', 'text-2xl', 'text-neutral-content', 'mx-4');
+    dragHandle.innerHTML = '⁝⁝';
 
     li.insertBefore(dragHandle, li.firstChild);
 
     const removeButton = document.createElement('button');
-    removeButton.classList.add('btn', 'btn-outline', 'btn-error');
+    removeButton.classList.add('btn', 'btn-outline', 'btn-error', 'float-right', 'text-2xl');
     removeButton.textContent = '×';
     removeButton.addEventListener('click', () => removeUtility(index));
-    li.appendChild(removeButton);
+
+    const buttonDiv = document.createElement('div');
+    buttonDiv.classList.add('list-col-grow');
+    buttonDiv.appendChild(removeButton)
+    li.appendChild(buttonDiv);
 
     li.classList.add('items-center');
 

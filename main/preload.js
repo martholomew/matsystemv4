@@ -7,15 +7,13 @@ if (location.protocol === 'file:') {
 
 contextBridge.exposeInMainWorld('ipc', {
   getProcessList: () => ipcRenderer.invoke('get-process-list'),
-  selectProcess: (pid) => ipcRenderer.send('select-process', pid),
+  selectProcess: (processData) => ipcRenderer.send('select-process', processData),
   onProcessDetails: (callback) =>
     ipcRenderer.on('process-details', (event, details) => callback(details)),
-  onLunahostLog: (callback) =>
-    ipcRenderer.on('lunahost-log', (event, output) => callback(output)),
+  onLog: (callback) =>
+    ipcRenderer.on('log', (event, logData) => callback(logData)),
   onLunahostThread: (callback) =>
     ipcRenderer.on('lunahost-thread', (event, output) => callback(output)),
-  onError: (callback) =>
-    ipcRenderer.on('error', (event, error) => callback(error)),
   sendText: (data) => ipcRenderer.send('send-text-to-second', data),
   onUpdateText: (callback) =>
     ipcRenderer.on('update-text', (event, data) => callback(data)),
@@ -25,4 +23,6 @@ contextBridge.exposeInMainWorld('ipc', {
   setIgnoreMouseEvents: (ignore) => ipcRenderer.send('set-ignore-mouse-events', ignore),
   sendBounds: (bounds) => ipcRenderer.send('set-bounds', bounds),
   getConfiguration: (exeName) => ipcRenderer.invoke('get-configuration', exeName),
+  onSetupComplete: (callback) => ipcRenderer.on('setup-complete', callback),
+  onAutoProcessSelected: (callback) => ipcRenderer.on('auto-process-selected', (event, processData) => callback(processData)),
 });
